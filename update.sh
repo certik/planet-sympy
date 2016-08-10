@@ -9,7 +9,7 @@ cd testrun
 ./rawdog -d planetsympy/ --write
 cd ..
 
-if [[ "${TRAVIS}" == "true" ]]; then
+if [[ "${TESTING}" == "true" ]]; then
     # Use testing setup for Travis
     REPO_SUFFIX="-test"
 else
@@ -27,7 +27,7 @@ COMMIT_MESSAGE="Publishing site on `date "+%Y-%m-%d %H:%M:%S"`"
 git checkout -t origin/gh-pages
 rm -rf *
 cp -r ../testrun/website/* .
-if [[ "${TRAVIS}" != "true" ]]; then
+if [[ "${TESTING}" != "true" ]]; then
     echo "planet.sympy.org" > CNAME
 fi
 git add -A .

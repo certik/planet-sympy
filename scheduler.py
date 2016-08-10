@@ -15,10 +15,11 @@ def job(silence_error=False):
     print("Job finished.")
 
 print("Docker environment variables:")
-if os.environ.get("DEPLOY_TOKEN"):
-    deploy_token_display = "<non-emtpy deploy token>"
+if os.environ.get("SSH_PRIVATE_KEY"):
+    deploy_token_display = "<non-emtpy ssh private key>"
 else:
     deploy_token_display = "<empty>"
-print("DEPLOY_TOKEN =", deploy_token_display)
+print("SSH_PRIVATE_KEY =", deploy_token_display)
+print("TESTING =", os.environ.get("TESTING"))
 print("Running job()")
 job()
