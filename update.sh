@@ -3,7 +3,6 @@
 set -e
 set -x
 
-rm -rf testrun/*
 cp -r planet/* testrun/
 cd testrun
 ./rawdog -d planetsympy/ --update
@@ -12,15 +11,12 @@ cd ..
 
 if [[ "${TRAVIS}" == "true" ]]; then
     # Use testing setup for Travis
-    DEPLOY_KEY_FILE=../travisdeploykey.enc
     REPO_SUFFIX="-test"
 else
     # Production setup
-    DEPLOY_KEY_FILE=../deploykey.enc
     REPO_SUFFIX=""
 fi
 
-rm -rf planet.sympy.org${REPO_SUFFIX}
 git clone https://github.com/planet-sympy/planet.sympy.org${REPO_SUFFIX}
 cd planet.sympy.org${REPO_SUFFIX}
 
@@ -40,22 +36,18 @@ git commit -m "${COMMIT_MESSAGE}"
 
 echo "Deploying:"
 
-if [ ! -n "$(grep "^github.com " ~/.ssh/known_hosts)" ]; then
-    mkdir ~/.ssh
-    chmod 700 ~/.ssh
-    ssh-keyscan github.com >> ~/.ssh/known_hosts
-fi
+mkdir ~/.ssh
+chmod 700 ~/.ssh
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+eval `ssh-agent -s`
 
 set +x
-if [[ "${DEPLOY_TOKEN}" == "" ]]; then
-    echo "Not deploying because DEPLOY_TOKEN is empty."
+if [[ "${SSH_PRIVATE_KEY}" == "" ]]; then
+    echo "Not deploying because SSH_PRIVATE_KEY is empty."
     exit 0
 fi
-openssl aes-256-cbc -k ${DEPLOY_TOKEN} -in ${DEPLOY_KEY_FILE} -out deploykey -d
+ssh-add <(echo "$SSH_PRIVATE_KEY")
 set -x
-
-chmod 600 deploykey
-eval `ssh-agent -s`
-ssh-add deploykey
 
 git push git@github.com:planet-sympy/planet.sympy.org${REPO_SUFFIX} gh-pages
