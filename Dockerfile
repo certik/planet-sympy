@@ -24,7 +24,7 @@ ADD planet planet
 ADD update.sh update.sh
 ADD scheduler.py scheduler.py
 #ADD .git/refs/heads/master git_revision
-RUN chown -R swuser:swuser planet update.sh deploykey.enc scheduler.py travisdeploykey.enc
+RUN chown -R swuser:swuser planet update.sh scheduler.py
 
 USER swuser
 
