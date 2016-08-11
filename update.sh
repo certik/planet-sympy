@@ -42,6 +42,10 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 eval `ssh-agent -s`
 
+echo "showing the key:"
+echo "$SSH_PRIVATE_KEY"
+echo "end"
+
 set +x
 if [[ "${SSH_PRIVATE_KEY}" == "" ]]; then
     echo "Not deploying because SSH_PRIVATE_KEY is empty."
