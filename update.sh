@@ -42,16 +42,24 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 eval `ssh-agent -s`
 
-echo "showing the key:"
-echo "$SSH_PRIVATE_KEY"
-echo "end"
-
 set +x
 if [[ "${SSH_PRIVATE_KEY}" == "" ]]; then
     echo "Not deploying because SSH_PRIVATE_KEY is empty."
     exit 0
 fi
-ssh-add <(echo "$SSH_PRIVATE_KEY")
+# Generate the private/public key pair using:
+#
+#     ssh-keygen -f deploy_key -N ""
+#
+# then set the $SSH_PRIVATE_KEY environment variable in the CI (Travis-CI,
+# GitLab-CI, ...) to the base64 encoded private key:
+#
+#     cat deploy_key | base64 -w0
+#
+# and add the public key `deploy_key.pub` into the target git repository (with
+# write permissions).
+
+ssh-add <(echo "$SSH_PRIVATE_KEY" | base64 --decode)
 set -x
 
 git push git@github.com:planet-sympy/planet.sympy.org${REPO_SUFFIX} gh-pages
